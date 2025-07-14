@@ -1,22 +1,113 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+    overflow-y: auto;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-y: auto;
+    background: linear-gradient(to right, #BBDEFB, #90CAF9);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    padding-bottom: 60px;
+}
+
+main {
+    flex: 1;
+}
+
+.container {
+    margin-top: 40px;
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+}
+
+h2, h3 {
+    color: rgba(136, 14, 79);
+    font-weight: 600;
+}
+
+form {
+    margin-top: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+select {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+button {
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+/* Buton renkleri */
+.btn-primary {
+    background-color: #DD2C00;
+    border-color: white;
+}
+
+    .btn-primary:hover {
+        background-color: #BF360C;
+    }
+
+.btn-info {
+    background-color: #0288D1;
+    border: none;
+}
+
+    .btn-info:hover {
+        background-color: #0277BD;
+    }
+
+.btn-secondary {
+    background-color: #455A64;
+    border: none;
+}
+
+    .btn-secondary:hover {
+        background-color: #37474F;
+    }
+
+.btn-danger {
+    background-color: #C62828;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #B71C1C;
+    }
+
+.alert {
+    border-radius: 8px;
+}
+
+/* Footer fix */
+footer {
+    background-color: #f1f1f1;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: auto;
 }

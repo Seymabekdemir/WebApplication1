@@ -1,0 +1,23 @@
+﻿@model WebApplication1.Models.Kisi
+
+@{
+    ViewData["Title"] = "Kişi Sil";
+}
+
+<h2>Kişi Sil</h2>
+
+<form asp-action="KisiSil" method="post">
+    <div class="form-group">
+        <label for="id">Silmek istediğiniz kişinin ID'si:</label>
+        <input type="number" class="form-control" id="id" name="id" required />
+    </div>
+
+    <button type="submit" class="btn btn-danger mt-3">Sil</button>
+</form>
+
+@if (ViewBag.Mesaj != null)
+{
+    <div class="alert alert-info mt-3">
+        @ViewBag.Mesaj
+    </div>
+}

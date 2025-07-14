@@ -1,0 +1,37 @@
+﻿@model WebApplication1.Models.Kisi
+
+@{
+    ViewData["Title"] = "Kişi Ekle";
+}
+
+<h2>Kişi Ekle</h2>
+
+<div style="width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
+    <form asp-action="kişiekle" method="post">
+
+        
+        <label>ID:</label><br />
+        <input asp-for="Id" class="form-control"  /><br />
+
+        <label>Ad:</label><br />
+        <input asp-for="Ad" class="form-control" /><br />
+
+        <label>Soyad:</label><br />
+        <input asp-for="Soyad" class="form-control" /><br />
+
+        <label>Email:</label><br />
+        <input asp-for="Email" type="email" class="form-control" /><br />
+
+        <label>Departman:</label><br />
+        <input asp-for="Departman" class="form-control" /><br />
+
+        <label>Doğum Tarihi:</label><br />
+        <input asp-for="DogumTarihi" type="date" class="form-control" /><br />
+
+        <label>İş Tanımı:</label><br />
+        <input asp-for="IsTanimi" class="form-control" /><br />
+
+        <button type="submit" style="margin-top:10px;" class="btn btn-primary">Kaydet</button>
+
+    </form>
+</div>

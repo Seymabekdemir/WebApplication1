@@ -2,6 +2,26 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">herkese merhaba</h1>
+<div class="d-flex justify-content-center mt-5">
+    <div class="border rounded p-4 shadow-sm" style="width: 400px; background-color: #E1F5FE; border: 2px solid 	#E1F5FE;">
+
+        <a asp-controller="Home" asp-action="kişiekle"
+           class="mb-3 w-100 py-2 fs-5"
+           style="background-color: #CE93D8; color: white; border-radius: 8px; text-align: center; display: block; text-decoration: none;">
+            ➕ Yeni Kişi Ekle
+        </a>
+
+        <a asp-controller="Home" asp-action="kişibilgilerinigüncelle"
+           class="mb-3 w-100 py-2 fs-5"
+           style="background-color: #64B5F6; color: white; border-radius: 8px; text-align: center; display: block; text-decoration: none;">
+            ✏️ Kişi Bilgilerini Güncelle
+        </a>
+
+        <a asp-controller="Home" asp-action="KisiSil"
+           class="w-100 py-2 fs-5"
+           style="background-color: #FFD740; color: white; border-radius: 8px; text-align: center; display: block; text-decoration: none;">
+            🗑️ Kişi Sil
+        </a>
+
+    </div>
 </div>
