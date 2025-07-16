@@ -1,79 +1,31 @@
-﻿@model WebApplication1.Models.Kisi
+﻿@model List<WebApplication1.Models.Kisi>
 
 @{
     ViewData["Title"] = "Kişi Görüntüle";
 }
 
-<h2>Kişi ID’ye Göre Sorgula</h2>
+<h2>Kişi Ara</h2>
 
-<form asp-action="KisiGoruntule" method="post">
-    <div class="form-group">
-        <label for="id">Kişi ID:</label>
-        <input type="number" name="id" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary mt-2">Sorgula</button>
-</form>
+<input type="text" id="arama" class="form-control mb-3" placeholder="Ad, soyad veya parça eşleşme..." />
 
-@if (Model != null)
-{
-    <div class="mt-4">
-        <h4>Kişi Bilgileri</h4>
-        <ul class="list-group">
-            <li class="list-group-item"><strong>ID:</strong> @Model.Id</li>
-            <li class="list-group-item"><strong>Ad:</strong> @Model.Ad</li>
-            <li class="list-group-item"><strong>Soyad:</strong> @Model.Soyad</li>
-            <li class="list-group-item"><strong>Email:</strong> @Model.Email</li>
-            <li class="list-group-item"><strong>Departman:</strong> @Model.Departman</li>
-            <li class="list-group-item"><strong>Doğum Tarihi:</strong> @Model.DogumTarihi.ToShortDateString()</li>
-            <li class="list-group-item"><strong>İş Tanımı:</strong> @Model.IsTanimi</li>
-        </ul>
-    </div>
-}
-else if (ViewBag.Hata != null)
-{
-    <div class="alert alert-warning mt-3">
-        @ViewBag.Hata
-    </div>
-}
+<div id="listeAlani">
+    @await Html.PartialAsync("_KisiListesi", Model)
+</div>
 
-<hr class="my-4" />
-<h3>Tüm Kişiler</h3>
+@section Scripts {
+    <script>
+        document.getElementById("arama").addEventListener("input", function () {
+            let kelime = this.value;
 
-@{
-    var kisiler = ViewBag.Kisiler as List<WebApplication1.Models.Kisi>;
-}
-
-@if (kisiler != null && kisiler.Any())
-{
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ad</th>
-                <th>Soyad</th>
-                <th>Email</th>
-                <th>Departman</th>
-                <th>Doğum Tarihi</th>
-                <th>İş Tanımı</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var kisi in kisiler)
-            {
-                <tr>
-                    <td>@kisi.Id</td>
-                    <td>@kisi.Ad</td>
-                    <td>@kisi.Soyad</td>
-                    <td>@kisi.Email</td>
-                    <td>@kisi.Departman</td>
-                    <td>@kisi.DogumTarihi.ToShortDateString()</td>
-                    <td>@kisi.IsTanimi</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Henüz kayıtlı kişi bulunamadı.</p>
+            fetch(`/Home/KisiGoruntule?searchTerm=${encodeURIComponent(kelime)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("listeAlani").innerHTML = data;
+            });
+        });
+    </script>
 }

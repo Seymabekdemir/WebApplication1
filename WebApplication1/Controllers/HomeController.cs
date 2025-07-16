@@ -111,27 +111,28 @@ namespace WebApplication1.Controllers
             return View("kişibilgilerinigüncelle", kisi);
         }
 
-        // Kişi Görüntüleme Sayfası (GET)
+        // Yeni Kişi Görüntüleme Sayfası (GET + canlı arama)
         [HttpGet]
-        public IActionResult KisiGoruntule()
+        public IActionResult KisiGoruntule(string searchTerm)
         {
-            ViewBag.Kisiler = _context.Kisiler.ToList();
-            return View();
-        }
+            var kisiler = from k in _context.Kisiler select k;
 
-        [HttpPost]
-        public IActionResult KisiGoruntule(int id)
-        {
-            var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == id);
-            ViewBag.Kisiler = _context.Kisiler.ToList();
-
-            if (kisi == null)
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                ViewBag.Hata = "Bu ID'ye sahip kişi bulunamadı.";
-                return View();
+                searchTerm = searchTerm.ToLower();
+                kisiler = kisiler.Where(k =>
+                    k.Ad.ToLower().Contains(searchTerm) ||
+                    k.Soyad.ToLower().Contains(searchTerm));
             }
 
-            return View(kisi);
+            // Canlı arama için AJAX isteği ise sadece partial liste döner
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_KisiListesi", kisiler.ToList());
+            }
+
+            // Normal sayfa açılışı için full listeyi gönder
+            return View(kisiler.ToList());
         }
 
         // Hata Sayfası
