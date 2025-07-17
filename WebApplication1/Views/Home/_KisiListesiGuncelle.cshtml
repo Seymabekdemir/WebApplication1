@@ -1,0 +1,33 @@
+﻿@model List<WebApplication1.Models.Kisi>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+        <tr>
+            <th>ID</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Email</th>
+            <th>Departman</th>
+            <th>Doğum Tarihi</th>
+            <th>İş Tanımı</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kisi in Model)
+        {
+            <tr>
+                <td>@kisi.Id</td>
+                <td>@kisi.Ad</td>
+                <td>@kisi.Soyad</td>
+                <td>@kisi.Email</td>
+                <td>@kisi.Departman</td>
+                <td>@kisi.DogumTarihi.ToShortDateString()</td>
+                <td>@kisi.IsTanimi</td>
+                <td>
+                    <button class="btn btn-sm btn-primary kisi-sec" data-id="@kisi.Id">Seç</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
