@@ -3,23 +3,21 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Ad</th>
             <th>Soyad</th>
             <th>Email</th>
             <th>Departman</th>
             <th>Doğum Tarihi</th>
             <th>İş Tanımı</th>
-            <th>Seç</th>
+            <th>Sil</th>
         </tr>
     </thead>
     <tbody>
-        @if (Model != null && Model.Count > 0)
+        @if (Model.Any())
         {
             foreach (var kisi in Model)
             {
                 <tr>
-                    <td>@kisi.Id</td>
                     <td>@kisi.Ad</td>
                     <td>@kisi.Soyad</td>
                     <td>@kisi.Email</td>
@@ -27,13 +25,20 @@
                     <td>@kisi.DogumTarihi.ToString("yyyy-MM-dd")</td>
                     <td>@kisi.IsTanimi</td>
                     <td>
-                        <button class="btn btn-sm btn-primary kisi-sec" data-id="@kisi.Id">Seç</button>
+                        <button class="btn btn-danger kisi-sil"
+                                data-id="@kisi.Id"
+                                data-adsoyad="@kisi.Ad @kisi.Soyad">
+                            Sil
+                        </button>
                     </td>
                 </tr>
             }
         }
         else
         {
-            <tr><td colspan="8" class="text-center">Sonuç bulunamadı</td></tr>
+            <tr>
+                <td colspan="3" class="text-center">Sonuç bulunamadı</td>
+            </tr>
         }
     </tbody>
+</table>

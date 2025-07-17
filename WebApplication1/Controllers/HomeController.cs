@@ -21,14 +21,10 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        // Kişi Ekleme Sayfası (GET)
+        // Kişi Ekleme Sayfası
         [HttpGet]
-        public IActionResult KisiEkle()
-        {
-            return View();
-        }
+        public IActionResult KisiEkle() => View();
 
-        // Kişi Ekleme İşlemi (POST)
         [HttpPost]
         public IActionResult KisiEkle(Kisi yeniKisi)
         {
@@ -42,61 +38,58 @@ namespace WebApplication1.Controllers
             return View(yeniKisi);
         }
 
-        // Kişi Silme Sayfası (GET)
+        // Kişi Silme Sayfası
         [HttpGet]
-        public IActionResult KisiSil()
-        {
-            return View();
-        }
+        public IActionResult KisiSil() => View();
 
         [HttpPost]
         public IActionResult KisiSil(int id)
         {
             var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == id);
-            if (kisi == null)
-            {
-                ViewBag.Mesaj = "Bu ID'ye sahip kişi bulunamadı.";
-                return View();
-            }
+            if (kisi == null) return NotFound("Kişi bulunamadı.");
 
             _context.Kisiler.Remove(kisi);
             _context.SaveChanges();
-            ViewBag.Mesaj = "Kişi başarıyla silindi.";
-            return View();
+            return Content("Kişi başarıyla silindi.");
         }
 
-        // GÜNCELLEME SAYFASI (GET)
+        // ✅ EKLENEN METOT — Canlı Arama Sonuçları (Silme için)
         [HttpGet]
-        public IActionResult KisiBilgileriniGuncelle(int id)
+        public IActionResult KisiAramaSonuclariSil(string query)
         {
-            var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == id);
-            if (kisi == null) return NotFound();
+            var kisiler = string.IsNullOrEmpty(query)
+                ? new List<Kisi>()
+                : _context.Kisiler
+                    .Where(k => k.Ad.Contains(query) || k.Soyad.Contains(query))
+                    .OrderBy(k => k.Ad)
+                    .Take(10)
+                    .ToList();
 
-            // View içine TEK bir kişi modeli gönderiyoruz, partial değil normal view
-            return View("KisiBilgileriniGuncelle", kisi);
+            return PartialView("_KisiListesiSil", kisiler);
         }
 
-        // GÜNCELLEME İŞLEMİ (POST)
-        [HttpPost]
-        // Arama sonucu partial view döner
+        // Güncelleme Sayfası (ID’siz)
         [HttpGet]
-        public IActionResult KisiAramaSonuclari(string query)
-        {
-            if (string.IsNullOrEmpty(query))
-                return PartialView("_KisiListesiGuncelle", new List<Kisi>());
+        public IActionResult KisiBilgileriniGuncelle() => View();
 
-            var kisiler = _context.Kisiler
-                .Where(k => k.Ad.Contains(query) || k.Soyad.Contains(query))
-                .OrderBy(k => k.Ad)
-                .Take(10)
-                .ToList();
+        // Canlı Arama (Güncelleme için)
+        [HttpGet]
+        public IActionResult KisiArama(string query)
+        {
+            var kisiler = string.IsNullOrEmpty(query)
+                ? new List<Kisi>()
+                : _context.Kisiler
+                    .Where(k => k.Ad.Contains(query) || k.Soyad.Contains(query))
+                    .OrderBy(k => k.Ad)
+                    .Take(10)
+                    .ToList();
 
             return PartialView("_KisiListesiGuncelle", kisiler);
         }
 
-        // Seçilen kişinin detayını JSON olarak döner
+        // JSON kişi bilgisi
         [HttpGet]
-        public IActionResult GetKisiById(int id)
+        public IActionResult GetKisi(int id)
         {
             var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == id);
             if (kisi == null)
@@ -114,9 +107,9 @@ namespace WebApplication1.Controllers
             });
         }
 
-        // Güncelleme işlemi POST
+        // Güncelleme işlemi
         [HttpPost]
-        public IActionResult KisiBilgileriniGuncelle(Kisi model)
+        public IActionResult KisiGuncelle(Kisi model)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Geçersiz veri");
@@ -134,9 +127,10 @@ namespace WebApplication1.Controllers
 
             _context.SaveChanges();
 
-            return Ok("Başarıyla güncellendi");
+            return Ok("Başarıyla güncellendi!");
         }
-        // Yeni Kişi Görüntüleme Sayfası (GET + canlı arama)
+
+        // Görüntüleme sayfası
         [HttpGet]
         public IActionResult KisiGoruntule(string searchTerm)
         {
@@ -150,13 +144,11 @@ namespace WebApplication1.Controllers
                     k.Soyad.ToLower().Contains(searchTerm));
             }
 
-            // Canlı arama için AJAX isteği ise sadece partial liste döner
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return PartialView("_KisiListesi", kisiler.ToList());
             }
 
-            // Normal sayfa açılışı için full listeyi gönder
             return View(kisiler.ToList());
         }
 
