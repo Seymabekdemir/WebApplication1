@@ -1,10 +1,12 @@
-﻿@model WebApplication1.Models.Kisi
+﻿@model List<WebApplication1.Models.Kisi>
 
 <h2>Kişi Güncelleme</h2>
 
 <input type="text" id="arama" placeholder="Ad veya soyad yaz..." class="form-control mb-3" />
 
-<div id="aramaSonuclari"></div>
+<div id="aramaSonuclari">
+    @await Html.PartialAsync("_KisiListesiGuncelle", Model)
+</div>
 
 <!-- Bu form başta gizli -->
 <form id="guncelleForm" style="display:none; margin-top: 20px;">
@@ -46,17 +48,15 @@
 
         aramaInput.addEventListener("input", function () {
             const query = this.value.trim();
-            if (query.length < 2) {
-                aramaSonuclari.innerHTML = "";
-                return;
-            }
 
-            fetch(`/Home/KisiArama?query=${encodeURIComponent(query)}`)
-                .then(res => res.text())
-                .then(html => {
-                    aramaSonuclari.innerHTML = html;
-                    kisiSecTiklamaAyarla();
-                });
+            fetch(`/Home/KisiArama?query=${encodeURIComponent(query)}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                aramaSonuclari.innerHTML = html;
+                kisiSecTiklamaAyarla();
+            });
         });
 
         function kisiSecTiklamaAyarla() {
@@ -88,12 +88,15 @@
                 method: "POST",
                 body: formData
             })
-                .then(res => {
-                    if (!res.ok) throw new Error();
-                    return res.text();
-                })
-                .then(msg => alert(msg))
-                .catch(() => alert("Güncelleme başarısız!"));
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.text();
+            })
+            .then(msg => alert(msg))
+            .catch(() => alert("Güncelleme başarısız!"));
         });
+
+        // İlk yüklemede butonları bağla
+        kisiSecTiklamaAyarla();
     </script>
 }

@@ -1,12 +1,15 @@
-﻿@{
+﻿@model List<WebApplication1.Models.Kisi>
+
+@{
     ViewData["Title"] = "Kişi Sil";
 }
 
 <h2>Kişi Sil</h2>
 
 <input type="text" id="arama" class="form-control" placeholder="Ad veya Soyad ile ara" />
-
-<div id="aramaSonuclari" style="margin-top: 15px;"></div>
+<div id="aramaSonuclari" style="margin-top: 15px;">
+    @await Html.PartialAsync("_KisiListesiSil", Model)
+</div>
 
 @section Scripts {
     <script>
@@ -15,17 +18,17 @@
 
         aramaInput.addEventListener("input", function () {
             const query = this.value.trim();
-            if (query.length < 2) {
-                aramaSonuclari.innerHTML = "";
-                return;
-            }
 
-            fetch(`/Home/KisiAramaSonuclariSil?query=${encodeURIComponent(query)}`)
-                .then(res => res.text())
-                .then(html => {
-                    aramaSonuclari.innerHTML = html;
-                    kisiSilButonlariAyarla();
-                });
+            fetch(`/Home/KisiAramaSonuclariSil?query=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.text())
+            .then(html => {
+                aramaSonuclari.innerHTML = html;
+                kisiSilButonlariAyarla();
+            });
         });
 
         function kisiSilButonlariAyarla() {
@@ -41,12 +44,15 @@
                         .then(res => res.ok ? res.text() : Promise.reject())
                         .then(msg => {
                             alert(msg);
-                            aramaInput.dispatchEvent(new Event("input")); // listeyi yenile
+                            aramaInput.dispatchEvent(new Event("input"));
                         })
                         .catch(() => alert("Silme işlemi başarısız oldu."));
                     }
                 });
             });
         }
+
+        // Sayfa ilk yüklendiğinde silme butonlarını bağla
+        kisiSilButonlariAyarla();
     </script>
 }
