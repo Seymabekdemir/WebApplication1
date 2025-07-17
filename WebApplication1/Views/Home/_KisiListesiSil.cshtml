@@ -3,6 +3,7 @@
 <table class="table table-bordered">
     <thead>
         <tr>
+            <th>ID</th>
             <th>Ad</th>
             <th>Soyad</th>
             <th>Email</th>
@@ -13,11 +14,12 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.Any())
+        @if (Model != null && Model.Count > 0)
         {
             foreach (var kisi in Model)
             {
                 <tr>
+                    <td>@kisi.Id</td>
                     <td>@kisi.Ad</td>
                     <td>@kisi.Soyad</td>
                     <td>@kisi.Email</td>
@@ -27,7 +29,7 @@
                     <td>
                         <button class="btn btn-danger kisi-sil"
                                 data-id="@kisi.Id"
-                                data-adsoyad="@kisi.Ad @kisi.Soyad">
+                                data-adsoyad="@($"{kisi.Ad} {kisi.Soyad}")">
                             Sil
                         </button>
                     </td>
@@ -37,7 +39,7 @@
         else
         {
             <tr>
-                <td colspan="3" class="text-center">Sonuç bulunamadı</td>
+                <td colspan="8" class="text-center">Sonuç bulunamadı</td>
             </tr>
         }
     </tbody>

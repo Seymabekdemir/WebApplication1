@@ -40,7 +40,11 @@ namespace WebApplication1.Controllers
 
         // Kişi Silme Sayfası
         [HttpGet]
-        public IActionResult KisiSil() => View();
+        public IActionResult KisiSil()
+        {
+            var kisiler = _context.Kisiler.OrderBy(k => k.Ad).ToList();
+            return View(kisiler);
+        }
 
         [HttpPost]
         public IActionResult KisiSil(int id)
@@ -70,7 +74,12 @@ namespace WebApplication1.Controllers
 
         // Güncelleme Sayfası (ID’siz)
         [HttpGet]
-        public IActionResult KisiBilgileriniGuncelle() => View();
+        public IActionResult KisiBilgileriniGuncelle()
+        {
+            var kisiler = _context.Kisiler.OrderBy(k => k.Ad).ToList();
+            return View(kisiler);
+        }
+
 
         // Canlı Arama (Güncelleme için)
         [HttpGet]
