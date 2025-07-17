@@ -1,9 +1,42 @@
 ﻿@model WebApplication1.Models.Kisi
 
-<h3>Kişi Ara (Ad veya Soyad)</h3>
-<input type="text" id="arama" placeholder="Ad veya soyad yaz..." class="form-control" autocomplete="off" />
+<h2>Kişi Güncelleme</h2>
 
-<div id="aramaSonuclari" style="margin-top:10px;"></div>
+<input type="text" id="arama" placeholder="Ad veya soyad yaz..." class="form-control mb-3" />
+
+<div id="aramaSonuclari"></div>
+
+<!-- Bu form başta gizli -->
+<form id="guncelleForm" style="display:none; margin-top: 20px;">
+    <input type="hidden" name="Id" />
+
+    <div class="mb-2">
+        <label>Ad</label>
+        <input type="text" name="Ad" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label>Soyad</label>
+        <input type="text" name="Soyad" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label>Email</label>
+        <input type="email" name="Email" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label>Departman</label>
+        <input type="text" name="Departman" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label>Doğum Tarihi</label>
+        <input type="date" name="DogumTarihi" class="form-control" />
+    </div>
+    <div class="mb-2">
+        <label>İş Tanımı</label>
+        <input type="text" name="IsTanimi" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">Güncelle</button>
+</form>
 
 @section Scripts {
     <script>
@@ -13,40 +46,34 @@
 
         aramaInput.addEventListener("input", function () {
             const query = this.value.trim();
-
             if (query.length < 2) {
                 aramaSonuclari.innerHTML = "";
                 return;
             }
 
-            fetch(`/Home/KisiAramaSonuclari?query=${encodeURIComponent(query)}`)
+            fetch(`/Home/KisiArama?query=${encodeURIComponent(query)}`)
                 .then(res => res.text())
                 .then(html => {
                     aramaSonuclari.innerHTML = html;
-                    kisiSecButtonlariAyarla();
-                })
-                .catch(() => {
-                    aramaSonuclari.innerHTML = "<div>Arama sırasında hata oluştu</div>";
+                    kisiSecTiklamaAyarla();
                 });
         });
 
-        function kisiSecButtonlariAyarla() {
+        function kisiSecTiklamaAyarla() {
             document.querySelectorAll(".kisi-sec").forEach(btn => {
                 btn.addEventListener("click", () => {
-                    const id = btn.getAttribute("data-id");
-                    fetch(`/Home/GetKisiById?id=${id}`)
+                    const id = btn.dataset.id;
+                    fetch(`/Home/GetKisi?id=${id}`)
                         .then(res => res.json())
                         .then(kisi => {
-                            document.querySelector("input[name='Id']").value = kisi.id;
-                            document.querySelector("input[name='Ad']").value = kisi.ad;
-                            document.querySelector("input[name='Soyad']").value = kisi.soyad;
-                            document.querySelector("input[name='Email']").value = kisi.email;
-                            document.querySelector("input[name='Departman']").value = kisi.departman;
-                            document.querySelector("input[name='DogumTarihi']").value = kisi.dogumTarihi ? kisi.dogumTarihi.split('T')[0] : "";
-                            document.querySelector("input[name='IsTanimi']").value = kisi.isTanimi;
-
-                            aramaInput.value = kisi.ad + " " + kisi.soyad;
-                            aramaSonuclari.innerHTML = "";
+                            guncelleForm.style.display = "block";
+                            guncelleForm.Id.value = kisi.id;
+                            guncelleForm.Ad.value = kisi.ad;
+                            guncelleForm.Soyad.value = kisi.soyad;
+                            guncelleForm.Email.value = kisi.email;
+                            guncelleForm.Departman.value = kisi.departman;
+                            guncelleForm.DogumTarihi.value = kisi.dogumTarihi;
+                            guncelleForm.IsTanimi.value = kisi.isTanimi;
                         });
                 });
             });
@@ -55,21 +82,18 @@
         guncelleForm.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            const formData = new FormData(this);
+            const formData = new FormData(guncelleForm);
 
-            fetch("/Home/KisiBilgileriniGuncelle", {
+            fetch("/Home/KisiGuncelle", {
                 method: "POST",
                 body: formData
             })
-            .then(res => {
-                if (res.ok) return res.text();
-                else throw new Error("Hata");
-            })
-            .then(() => {
-                alert("Güncellendi!");
-                aramaInput.dispatchEvent(new Event("input"));
-            })
-            .catch(() => alert("Güncelleme sırasında hata oluştu."));
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.text();
+                })
+                .then(msg => alert(msg))
+                .catch(() => alert("Güncelleme başarısız!"));
         });
     </script>
 }

@@ -1,23 +1,52 @@
-﻿@model WebApplication1.Models.Kisi
-
-@{
+﻿@{
     ViewData["Title"] = "Kişi Sil";
 }
 
 <h2>Kişi Sil</h2>
 
-<form asp-action="KisiSil" method="post">
-    <div class="form-group">
-        <label for="id">Silmek istediğiniz kişinin ID'si:</label>
-        <input type="number" class="form-control" id="id" name="id" required />
-    </div>
+<input type="text" id="arama" class="form-control" placeholder="Ad veya Soyad ile ara" />
 
-    <button type="submit" class="btn btn-danger mt-3">Sil</button>
-</form>
+<div id="aramaSonuclari" style="margin-top: 15px;"></div>
 
-@if (ViewBag.Mesaj != null)
-{
-    <div class="alert alert-info mt-3">
-        @ViewBag.Mesaj
-    </div>
+@section Scripts {
+    <script>
+        const aramaInput = document.getElementById("arama");
+        const aramaSonuclari = document.getElementById("aramaSonuclari");
+
+        aramaInput.addEventListener("input", function () {
+            const query = this.value.trim();
+            if (query.length < 2) {
+                aramaSonuclari.innerHTML = "";
+                return;
+            }
+
+            fetch(`/Home/KisiAramaSonuclariSil?query=${encodeURIComponent(query)}`)
+                .then(res => res.text())
+                .then(html => {
+                    aramaSonuclari.innerHTML = html;
+                    kisiSilButonlariAyarla();
+                });
+        });
+
+        function kisiSilButonlariAyarla() {
+            document.querySelectorAll(".kisi-sil").forEach(button => {
+                button.addEventListener("click", function () {
+                    const id = this.dataset.id;
+                    const adsoyad = this.dataset.adsoyad;
+
+                    if (confirm(`"${adsoyad}" adlı kişiyi silmek istediğinizden emin misiniz?`)) {
+                        fetch(`/Home/KisiSil?id=${id}`, {
+                            method: "POST"
+                        })
+                        .then(res => res.ok ? res.text() : Promise.reject())
+                        .then(msg => {
+                            alert(msg);
+                            aramaInput.dispatchEvent(new Event("input")); // listeyi yenile
+                        })
+                        .catch(() => alert("Silme işlemi başarısız oldu."));
+                    }
+                });
+            });
+        }
+    </script>
 }
