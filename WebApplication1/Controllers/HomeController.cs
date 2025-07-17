@@ -65,52 +65,77 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-
-        // Kişi Güncelleme Sayfası (GET)
+        // GÜNCELLEME SAYFASI (GET)
         [HttpGet]
-        public IActionResult kişibilgilerinigüncelle()
+        public IActionResult KisiBilgileriniGuncelle(int id)
         {
-            return View();
+            var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == id);
+            if (kisi == null) return NotFound();
+
+            // View içine TEK bir kişi modeli gönderiyoruz, partial değil normal view
+            return View("KisiBilgileriniGuncelle", kisi);
         }
 
-        // ID ile Kişi Getirme (POST)
+        // GÜNCELLEME İŞLEMİ (POST)
         [HttpPost]
-        public IActionResult KisiGetir(int id)
+        // Arama sonucu partial view döner
+        [HttpGet]
+        public IActionResult KisiAramaSonuclari(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+                return PartialView("_KisiListesiGuncelle", new List<Kisi>());
+
+            var kisiler = _context.Kisiler
+                .Where(k => k.Ad.Contains(query) || k.Soyad.Contains(query))
+                .OrderBy(k => k.Ad)
+                .Take(10)
+                .ToList();
+
+            return PartialView("_KisiListesiGuncelle", kisiler);
+        }
+
+        // Seçilen kişinin detayını JSON olarak döner
+        [HttpGet]
+        public IActionResult GetKisiById(int id)
         {
             var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == id);
             if (kisi == null)
-            {
-                ViewBag.Mesaj = "Bu ID'ye sahip kişi bulunamadı.";
-                return View("kişibilgilerinigüncelle");
-            }
+                return NotFound();
 
-            return View("kişibilgilerinigüncelle", kisi);
+            return Json(new
+            {
+                id = kisi.Id,
+                ad = kisi.Ad,
+                soyad = kisi.Soyad,
+                email = kisi.Email,
+                departman = kisi.Departman,
+                dogumTarihi = kisi.DogumTarihi.ToString("yyyy-MM-dd"),
+                isTanimi = kisi.IsTanimi
+            });
         }
 
-        // Kişi Güncelleme İşlemi (POST)
+        // Güncelleme işlemi POST
         [HttpPost]
-        public IActionResult kişibilgilerinigüncelle(Kisi guncellenmisKisi)
+        public IActionResult KisiBilgileriniGuncelle(Kisi model)
         {
-            var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == guncellenmisKisi.Id);
-            if (kisi == null)
-            {
-                ViewBag.Mesaj = "Bu ID'ye sahip kişi bulunamadı.";
-                return View("kişibilgilerinigüncelle");
-            }
+            if (!ModelState.IsValid)
+                return BadRequest("Geçersiz veri");
 
-            kisi.Ad = guncellenmisKisi.Ad;
-            kisi.Soyad = guncellenmisKisi.Soyad;
-            kisi.Email = guncellenmisKisi.Email;
-            kisi.Departman = guncellenmisKisi.Departman;
-            kisi.DogumTarihi = guncellenmisKisi.DogumTarihi;
-            kisi.IsTanimi = guncellenmisKisi.IsTanimi;
+            var kisi = _context.Kisiler.FirstOrDefault(k => k.Id == model.Id);
+            if (kisi == null)
+                return NotFound();
+
+            kisi.Ad = model.Ad;
+            kisi.Soyad = model.Soyad;
+            kisi.Email = model.Email;
+            kisi.Departman = model.Departman;
+            kisi.DogumTarihi = model.DogumTarihi;
+            kisi.IsTanimi = model.IsTanimi;
 
             _context.SaveChanges();
 
-            ViewBag.Mesaj = "Kişi başarıyla güncellendi.";
-            return View("kişibilgilerinigüncelle", kisi);
+            return Ok("Başarıyla güncellendi");
         }
-
         // Yeni Kişi Görüntüleme Sayfası (GET + canlı arama)
         [HttpGet]
         public IActionResult KisiGoruntule(string searchTerm)

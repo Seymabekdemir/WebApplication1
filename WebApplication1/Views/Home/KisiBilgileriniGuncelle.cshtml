@@ -1,0 +1,75 @@
+﻿@model WebApplication1.Models.Kisi
+
+<h3>Kişi Ara (Ad veya Soyad)</h3>
+<input type="text" id="arama" placeholder="Ad veya soyad yaz..." class="form-control" autocomplete="off" />
+
+<div id="aramaSonuclari" style="margin-top:10px;"></div>
+
+@section Scripts {
+    <script>
+        const aramaInput = document.getElementById("arama");
+        const aramaSonuclari = document.getElementById("aramaSonuclari");
+        const guncelleForm = document.getElementById("guncelleForm");
+
+        aramaInput.addEventListener("input", function () {
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                aramaSonuclari.innerHTML = "";
+                return;
+            }
+
+            fetch(`/Home/KisiAramaSonuclari?query=${encodeURIComponent(query)}`)
+                .then(res => res.text())
+                .then(html => {
+                    aramaSonuclari.innerHTML = html;
+                    kisiSecButtonlariAyarla();
+                })
+                .catch(() => {
+                    aramaSonuclari.innerHTML = "<div>Arama sırasında hata oluştu</div>";
+                });
+        });
+
+        function kisiSecButtonlariAyarla() {
+            document.querySelectorAll(".kisi-sec").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const id = btn.getAttribute("data-id");
+                    fetch(`/Home/GetKisiById?id=${id}`)
+                        .then(res => res.json())
+                        .then(kisi => {
+                            document.querySelector("input[name='Id']").value = kisi.id;
+                            document.querySelector("input[name='Ad']").value = kisi.ad;
+                            document.querySelector("input[name='Soyad']").value = kisi.soyad;
+                            document.querySelector("input[name='Email']").value = kisi.email;
+                            document.querySelector("input[name='Departman']").value = kisi.departman;
+                            document.querySelector("input[name='DogumTarihi']").value = kisi.dogumTarihi ? kisi.dogumTarihi.split('T')[0] : "";
+                            document.querySelector("input[name='IsTanimi']").value = kisi.isTanimi;
+
+                            aramaInput.value = kisi.ad + " " + kisi.soyad;
+                            aramaSonuclari.innerHTML = "";
+                        });
+                });
+            });
+        }
+
+        guncelleForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch("/Home/KisiBilgileriniGuncelle", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => {
+                if (res.ok) return res.text();
+                else throw new Error("Hata");
+            })
+            .then(() => {
+                alert("Güncellendi!");
+                aramaInput.dispatchEvent(new Event("input"));
+            })
+            .catch(() => alert("Güncelleme sırasında hata oluştu."));
+        });
+    </script>
+}
