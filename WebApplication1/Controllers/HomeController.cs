@@ -22,14 +22,15 @@ namespace WebApplication1.Controllers
         }
 
         // Kişi Ekleme Sayfası (GET)
-        public IActionResult kişiekle()
+        [HttpGet]
+        public IActionResult KisiEkle()
         {
             return View();
         }
 
         // Kişi Ekleme İşlemi (POST)
         [HttpPost]
-        public IActionResult kişiekle(Kisi yeniKisi)
+        public IActionResult KisiEkle(Kisi yeniKisi)
         {
             if (ModelState.IsValid)
             {
@@ -42,7 +43,6 @@ namespace WebApplication1.Controllers
         }
 
         // Kişi Silme Sayfası (GET)
-        [HttpGet]
         [HttpGet]
         public IActionResult KisiSil()
         {
